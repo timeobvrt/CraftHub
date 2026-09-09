@@ -63,7 +63,7 @@
                     </p>
 
                     <form
-                        action="#"
+                        action="{{ route('search') }}"
                         method="GET"
                         class="mx-auto mt-10 flex max-w-3xl flex-col gap-3 sm:flex-row"
                     >
