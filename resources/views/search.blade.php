@@ -1,5 +1,67 @@
 @php
     /** @var \Illuminate\Support\Collection<int, \App\Models\ModrinthProject> $projects */
+
+    $versionOption = $projects
+        ->flatMap(fn($p) => $p->gameVersions() ?? [])
+        ->filter()
+        ->filter(fn($v) => preg_match('/^\d+\.\d+(?:\.\d+)?$/', $v))
+        ->unique()
+        ->sort(fn($a, $b) => version_compare($b, $a))
+        ->mapWithKeys(
+            fn($version) => [
+                $version => $version,
+            ],
+        )
+        ->all();
+
+    $knownLoaders = [
+        'forge',
+        'neoforge',
+        'fabric',
+        'quilt',
+        'paper',
+        'purpur',
+        'velocity',
+        'bukkit',
+        'spigot',
+        'folia',
+    ];
+
+    $loaderOptions = $projects
+        ->flatMap(fn($project) => $project->categories() ?? [])
+        ->map(fn($category) => strtolower($category))
+        ->filter(fn($category) => in_array($category, $knownLoaders, true))
+        ->unique()
+        ->sort()
+        ->mapWithKeys(
+            fn($loader) => [
+                $loader => match ($loader) {
+                    'neoforge' => 'NeoForge',
+                    default => ucfirst($loader),
+                },
+            ],
+        )
+        ->all();
+
+    $typeLabels = [
+        'mod' => 'Mod',
+        'plugin' => 'Plugin',
+        'modpack' => 'Modpack',
+        'resourcepack' => 'Resource Pack',
+        'shader' => 'Shader',
+    ];
+
+    $typeOptions = $projects
+        ->flatMap(fn($project) => $project->projectTypes() ?? [])
+        ->filter()
+        ->unique()
+        ->sort()
+        ->mapWithKeys(
+            fn($type) => [
+                $type => $typeLabels[$type] ?? ucfirst($type),
+            ],
+        )
+        ->all();
 @endphp
 
 <x-layouts.app
@@ -80,47 +142,21 @@
                             name="version"
                             label="Minecraft version"
                             placeholder="All versions"
-                            :options="[
-                                '1.21.8' => '1.21.8',
-                                '1.21.5' => '1.21.5',
-                                '1.21.4' => '1.21.4',
-                                '1.21.1' => '1.21.1',
-                                '1.20.6' => '1.20.6',
-                                '1.20.4' => '1.20.4',
-                                '1.20.1' => '1.20.1',
-                                '1.19.4' => '1.19.4',
-                                '1.19.2' => '1.19.2',
-                            ]"
+                            :options="$versionOption"
                         />
 
                         <x-select
                             name="loader"
                             label="Loader"
                             placeholder="All loaders"
-                            :options="[
-                                'forge' => 'Forge',
-                                'neoforge' => 'NeoForge',
-                                'fabric' => 'Fabric',
-                                'quilt' => 'Quilt',
-                                'paper' => 'Paper',
-                                'purpur' => 'Purpur',
-                                'velocity' => 'Velocity',
-                                'bukkit' => 'Bukkit',
-                                'spigot' => 'Spigot',
-                            ]"
+                            :options="$loaderOptions"
                         />
 
                         <x-select
                             name="type"
                             label="Project Type"
                             placeholder="All types"
-                            :options="[
-                                'mod' => 'Mod',
-                                'plugin' => 'Plugin',
-                                'modpack' => 'Modpack',
-                                'resourcepack' => 'Resource Pack',
-                                'shader' => 'Shader',
-                            ]"
+                            :options="$typeOptions"
                         />
 
                         <x-select
