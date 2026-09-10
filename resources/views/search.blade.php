@@ -76,186 +76,65 @@
                             name="q"
                             value="{{ request('q') }}"
                         />
-                        <div>
-                            <label
-                                for="version"
-                                class="mb-2 block text-sm font-medium text-text"
-                            >
-                                Minecraft version
-                            </label>
+                        <x-select
+                            name="version"
+                            label="Minecraft version"
+                            placeholder="All versions"
+                            :options="[
+                                '1.21.8' => '1.21.8',
+                                '1.21.5' => '1.21.5',
+                                '1.21.4' => '1.21.4',
+                                '1.21.1' => '1.21.1',
+                                '1.20.6' => '1.20.6',
+                                '1.20.4' => '1.20.4',
+                                '1.20.1' => '1.20.1',
+                                '1.19.4' => '1.19.4',
+                                '1.19.2' => '1.19.2',
+                            ]"
+                        />
 
-                            <select
-                                id="version"
-                                name="version"
-                                class="w-full rounded-xl border border-white/10 bg-surface px-3 py-2.5 text-sm text-text outline-none transition focus:border-crafthub/50 focus:ring-4 focus:ring-crafthub/5"
-                            >
-                                <option value="">All versions</option>
+                        <x-select
+                            name="loader"
+                            label="Loader"
+                            placeholder="All loaders"
+                            :options="[
+                                'forge' => 'Forge',
+                                'neoforge' => 'NeoForge',
+                                'fabric' => 'Fabric',
+                                'quilt' => 'Quilt',
+                                'paper' => 'Paper',
+                                'purpur' => 'Purpur',
+                                'velocity' => 'Velocity',
+                                'bukkit' => 'Bukkit',
+                                'spigot' => 'Spigot',
+                            ]"
+                        />
 
-                                @foreach ([
-                                        '1.21.8',
-                                        '1.21.5',
-                                        '1.21.4',
-                                        '1.21.1',
-                                        '1.20.6',
-                                        '1.20.4',
-                                        '1.20.1',
-                                        '1.19.4',
-                                        '1.19.2'
-                                    ]
-                                    as $version)
-                                    <option
-                                        value="{{ $version }}"
-                                        @selected (request('version') === $version)
-                                    >
-                                        {{ $version }}
-                                    </option>
+                        <x-select
+                            name="type"
+                            label="Project Type"
+                            placeholder="All types"
+                            :options="[
+                                'mod' => 'Mod',
+                                'plugin' => 'Plugin',
+                                'modpack' => 'Modpack',
+                                'resourcepack' => 'Resource Pack',
+                                'shader' => 'Shader',
+                            ]"
+                        />
 
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label
-                                for="loader"
-                                class="mb-2 block text-sm font-medium text-text"
-                            >
-                                Loader
-                            </label>
-
-                            <select
-                                id="loader"
-                                name="loader"
-                                class="w-full rounded-xl border border-white/10 bg-surface px-3 py-2.5 text-sm outline-none transition focus:border-crafthub/50 focus:ring-4 focus:ring-crafthub/5"
-                            >
-                                <option value="">All loaders</option>
-
-                                @foreach ([
-                                        'forge',
-                                        'neoforge',
-                                        'fabric',
-                                        'quilt',
-                                        'paper',
-                                        'purpur',
-                                        'velocity',
-                                        'bukkit',
-                                        'spigot'
-                                    ]
-                                    as $loader)
-                                    <option
-                                        value="{{ $loader }}"
-                                        @selected (request('loader') === $loader)
-                                    >
-                                        {{
-                                            ucfirst(
-                                                $loader,
-                                            )
-                                        }}
-                                    </option>
-
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label
-                                for="type"
-                                class="mb-2 block text-sm font-medium text-text"
-                            >
-                                Project type
-                            </label>
-
-                            <select
-                                id="type"
-                                name="type"
-                                class="w-full rounded-xl border border-white/10 bg-surface px-3 py-2.5 text-sm outline-none transition focus:border-crafthub/50 focus:ring-4 focus:ring-crafthub/5"
-                            >
-                                <option value="">All types</option>
-
-                                <option
-                                    value="mod"
-                                    @selected (request('type') === 'mod')
-                                >
-                                    Mod
-                                </option>
-
-                                <option
-                                    value="plugin"
-                                    @selected (request('type') === 'plugin')
-                                >
-                                    Plugin
-                                </option>
-
-                                <option
-                                    value="modpack"
-                                    @selected (request('type') === 'modpack')
-                                >
-                                    Modpack
-                                </option>
-
-                                <option
-                                    value="resourcepack"
-                                    @selected (request('type') === 'resourcepack')
-                                >
-                                    Resource Pack
-                                </option>
-
-                                <option
-                                    value="shader"
-                                    @selected (request('type') === 'shader')
-                                >
-                                    Shader
-                                </option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label
-                                for="sort"
-                                class="mb-2 block text-sm font-medium text-text"
-                            >
-                                Sort by
-                            </label>
-
-                            <select
-                                id="sort"
-                                name="sort"
-                                class="w-full rounded-xl border border-white/10 bg-surface px-3 py-2.5 text-sm text-text outline-none transition focus:border-crafthub/50 focus:ring-4 focus:ring-crafthub/5"
-                            >
-                                <option
-                                    value="relevance"
-                                    @selected (request('sort', 'relevance') === 'relevance')
-                                >
-                                    Relevance
-                                </option>
-
-                                <option
-                                    value="downloads"
-                                    @selected (request('sort') === 'downloads')
-                                >
-                                    Downloads
-                                </option>
-
-                                <option
-                                    value="newest"
-                                    @selected (request('sort') === 'newest')
-                                >
-                                    Date published
-                                </option>
-
-                                <option
-                                    value="updated"
-                                    @selected (request('sort') === 'updated')
-                                >
-                                    Date updated
-                                </option>
-
-                                <option
-                                    value="follows"
-                                    @selected (request('sort') === 'follows')
-                                >
-                                    Followers
-                                </option>
-                            </select>
-                        </div>
+                        <x-select
+                            name="sort"
+                            label="Sort by"
+                            value="relevance"
+                            :options="[
+                                'relevance' => 'Relevance',
+                                'downloads' => 'Downloads',
+                                'newest' => 'Data published',
+                                'updated' => 'Date updated',
+                                'follows' => 'Followers',
+                            ]"
+                        />
 
                         <button
                             type="submit"
@@ -269,139 +148,7 @@
             <section>
                 <div class="space-y-3">
                     @forelse ($projects as $project)
-                        @php
-                            /** @var \App\Models\ModrinthProject $project */
-                        @endphp
-                        <a
-                            href="{{ route('project.show', $project->slug() ?? $project->id())}}"
-                            class="group block overflow-hidden rounded-2xl border border-white/10 bg-surface transition duration-200 hover:border-crafthub/30 hover:bg-surface-light/50"
-                        >
-                            <div class="flex gap-5 p-5 sm:p-6">
-                                <div class="shrink-0">
-                                    @if (!empty($project->iconUrl()))
-                                        <img
-                                            src="{{ $project->iconUrl() }}"
-                                            alt="{{ $project->name() }}"
-                                            loading="lazy"
-                                            class="h-16 w-16 rounded-xl object-cover sm:h-20 sm:w-20"
-                                        />
-
-                                    @else
-                                        <div
-                                            class="flex h-16 w-16 items-center justify-center rounded-xl border border-white/5 bg-background sm:h-20 sm:w-20"
-                                        >
-                                            <img
-                                                src="{{ asset('crafthub.svg') }}"
-                                                alt=""
-                                                class="h-8 w-8 opacity-40"
-                                            />
-                                        </div>
-
-                                    @endif
-                                </div>
-
-                                <div class="min-w-0 flex-1">
-                                    <div
-                                        class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
-                                    >
-                                        <div class="min-w-0">
-                                            <h2
-                                                class="truncate text-lg font-semibold transition group-hover:text-crafthub"
-                                            >
-                                                {{ $project->name() }}
-                                            </h2>
-
-                                            @if (!empty($project->author()))
-                                                <p
-                                                    class="mt-0.5 text-sm text-muted"
-                                                >
-                                                    by {{ $project->author() }}
-                                                </p>
-
-                                            @endif
-                                        </div>
-
-                                        @if (!empty($project->projectTypes()))
-                                            <div
-                                                class="flex shrink-0 flex-wrap justify-end gap-2"
-                                            >
-                                                @foreach ($project->projectTypes() as $type)
-                                                    <span
-                                                        class="rounded-lg border border-crafthub/15 bg-crafthub/10 px-2.5 py-1 text-xs font-medium capitalize text-crafthub"
-                                                    >
-                                                        {{ $type }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    @if (!empty($project->summary()))
-                                        <p
-                                            class="mt-3 line-clamp-2 text-sm leading-6 text-muted"
-                                        >
-                                            {{ $project->summary() }}
-                                        </p>
-
-                                    @endif
-
-                                    <div
-                                        class="mt-4 flex flex-wrap items-center gap-2"
-                                    >
-                                        <span
-                                            class="inline-flex items-center gap-1.5 text-xs text-muted"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                stroke-width="2"
-                                                class="h-3.5 w-3.5"
-                                            >
-                                                <path d="M12 3v12"></path>
-                                                <path d="m7 10 5 5 5-5"></path>
-                                                <path d="M5 21h14"></path>
-                                            </svg>
-
-                                            {{
-                                                number_format(
-                                                    $project->downloads() ?? 0,
-                                                    0,
-                                                    ',',
-                                                    ' ',
-                                                )
-                                            }}
-                                        </span>
-
-                                        @foreach (array_slice($project->categories() ?? [], 0, 4) as $category)
-                                            <span
-                                                class="rounded-lg border border-white/5 bg-background px-2 py-1 text-xs text-muted"
-                                            >
-                                                {{ $category }}
-                                            </span>
-
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="hidden shrink-0 items-center sm:flex"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        class="h-5 w-5 text-muted transition group-hover:translate-x-1 group-hover:text-crafthub"
-                                    >
-                                        <path d="m9 18 6-6-6-6"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </a>
-
+                        <x-card :project="$project" />
                     @empty
                         <div
                             class="rounded-2xl border border-white/10 bg-surface px-6 py-20 text-center"
@@ -439,7 +186,6 @@
                                 Clear filters
                             </a>
                         </div>
-
                     @endforelse
                     @if ($lastPage > 1)
                         <nav
