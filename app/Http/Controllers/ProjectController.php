@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ModrinthProject;
 use App\Services\ModrinthService;
 
 class ProjectController extends Controller
 {
     public function show(string $slug, ModrinthService $modrinth)
     {
-        $project = $modrinth->project($slug);
+        $projectData = $modrinth->project($slug);
+        $project = new ModrinthProject($projectData);
         $version = $modrinth->versions($slug);
 
         return view("project", [

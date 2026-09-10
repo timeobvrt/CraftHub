@@ -8,4 +8,15 @@
         "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
+
+    --color-crafthub: #10b981;
+    --color-crafthub-light: #34d399;
+    --color-crafthub-darK: #059669;
+
+    --color-background: #09090b;
+    --color-surface: #18181b;
+    --color-surface-light: #27272a;
+
+    --color-text: #fafafa;
+    --color-muted: #a1a1aa;
 }

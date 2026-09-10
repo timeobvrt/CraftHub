@@ -6,6 +6,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::view("/", "welcome")->name("home");
 Route::get("/search", SearchController::class)->name("search");
-Route::get("/project/{slug}", [ProjectController::class, "show"])->name(
-    "project.show",
-);
+Route::get("/project/{slug}", [ProjectController::class, "show"])->name("project.show",);
