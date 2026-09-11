@@ -1,58 +1,73 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+    <img
+        src="./public/crafthub-text-horizontal.svg"
+        alt="CraftHub"
+        width="420"
+    >
 </p>
 
-## About Laravel
+<h1 align="center">CraftHub</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+    A unified search platform for discovering Minecraft projects across multiple hosting platforms.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# CraftHub
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+CraftHub is a unified search platform for discovering Minecraft mods, plugins, modpacks, resource packs, shaders, and
+other community projects across multiple hosting platforms.
 
-## Learning Laravel
+Instead of searching each platform individually, CraftHub collects projects from supported providers, normalizes their
+information, detects duplicates, and presents everything through a consistent interface.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Features
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Search projects across multiple platforms.
+- Current support for Modrinth and SpigotMC.
+- Unified project cards and project pages.
+- Platform-specific download links.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Multi-platform projects
 
-## Agentic Development
+A project may exist on multiple platforms with different metadata.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+For example, a project can be distributed as:
 
-```bash
-composer require laravel/boost --dev
+- a mod on Modrinth;
+- a plugin on SpigotMC;
+- a Paper plugin on Hangar.
 
-php artisan boost:install
-```
+CraftHub can merge these entries into one project while preserving:
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+- every source platform;
+- project types;
+- supported loaders;
+- Minecraft versions;
+- categories;
+- download links;
+- platform-specific metadata.
 
-## Contributing
+This prevents duplicate search results without losing useful information.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Supported providers
 
-## Code of Conduct
+### Modrinth
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Modrinth provides:
 
-## Security Vulnerabilities
+- mods, plugins, modpacks, shaders, resource packs, server;
+- detailed descriptions;
+- project galleries;
+- version-specific files;
+- supported loaders and Minecraft versions;
+- followers, environments, and external links.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### SpigotMC
 
-## License
+SpigotMC resources are accessed through the Spiget API and provide:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Bukkit, Spigot, Paper, and Purpur plugins;
+- tested Minecraft versions;
+- resource descriptions and summaries;
+- download counts;
+- resource and download links.
