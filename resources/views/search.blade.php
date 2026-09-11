@@ -1,10 +1,31 @@
 @php
-    /** @var \Illuminate\Support\Collection<int, \App\Models\ModrinthProject> $projects */
+    /** @var \Illuminate\Support\Collection<int, \App\Models\Project> $projects */
 
-    $versionOption = $projects
-        ->flatMap(fn($p) => $p->gameVersions() ?? [])
+    $loaderOptions = $projects
+        ->flatMap(fn($project) => $project->loaders())
         ->filter()
-        ->filter(fn($v) => preg_match('/^\d+\.\d+(?:\.\d+)?$/', $v))
+        ->unique()
+        ->sort()
+        ->mapWithKeys(
+            fn($loader) => [
+                $loader => match ($loader) {
+                    'neoforge' => 'NeoForge',
+                    'spigot' => 'Spigot',
+                    'bukkit' => 'Bukkit',
+                    'paper' => 'Paper',
+                    'purpur' => 'Purpur',
+                    'velocity' => 'Velocity',
+                    'bungeecord' => 'Bungeecord',
+                    default => ucfirst($loader),
+                },
+            ],
+        )
+        ->all();
+
+    $versionOptions = $projects
+        ->flatMap(fn($project) => $project->versions())
+        ->filter()
+        ->filter(fn($version) => preg_match('/^\d+\.\d+(?:\.\d+)?$/', $version))
         ->unique()
         ->sort(fn($a, $b) => version_compare($b, $a))
         ->mapWithKeys(
@@ -13,59 +34,10 @@
             ],
         )
         ->all();
-
-    $knownLoaders = [
-        'forge',
-        'neoforge',
-        'fabric',
-        'quilt',
-        'paper',
-        'purpur',
-        'velocity',
-        'bukkit',
-        'spigot',
-        'folia',
-    ];
-
-    $loaderOptions = $projects
-        ->flatMap(fn($project) => $project->categories() ?? [])
-        ->map(fn($category) => strtolower($category))
-        ->filter(fn($category) => in_array($category, $knownLoaders, true))
-        ->unique()
-        ->sort()
-        ->mapWithKeys(
-            fn($loader) => [
-                $loader => match ($loader) {
-                    'neoforge' => 'NeoForge',
-                    default => ucfirst($loader),
-                },
-            ],
-        )
-        ->all();
-
-    $typeLabels = [
-        'mod' => 'Mod',
-        'plugin' => 'Plugin',
-        'modpack' => 'Modpack',
-        'resourcepack' => 'Resource Pack',
-        'shader' => 'Shader',
-    ];
-
-    $typeOptions = $projects
-        ->flatMap(fn($project) => $project->projectTypes() ?? [])
-        ->filter()
-        ->unique()
-        ->sort()
-        ->mapWithKeys(
-            fn($type) => [
-                $type => $typeLabels[$type] ?? ucfirst($type),
-            ],
-        )
-        ->all();
 @endphp
 
 <x-layouts.app
-    :title="'Search ' . $query . ' — CraftHub'"
+    :title="'Search ' . $query . ' - CraftHub'"
     :show-search="true"
     :query="$query"
 >
@@ -138,11 +110,12 @@
                             name="q"
                             value="{{ request('q') }}"
                         />
+
                         <x-select
                             name="version"
                             label="Minecraft version"
                             placeholder="All versions"
-                            :options="$versionOption"
+                            :options="$versionOptions"
                         />
 
                         <x-select
@@ -152,12 +125,12 @@
                             :options="$loaderOptions"
                         />
 
-                        <x-select
+                        {{-- <x-select
                             name="type"
                             label="Project Type"
                             placeholder="All types"
                             :options="$typeOptions"
-                        />
+                        /> --}}
 
                         <x-select
                             name="sort"
@@ -224,52 +197,60 @@
                         </div>
                     @endforelse
                     @if ($lastPage > 1)
+                        @php
+                            $start = max(1, $page - 2);
+                            $end = min($lastPage, $page + 2);
+                        @endphp
+
                         <nav
-                            class="mt-8 flex items-center justify-between gap-4"
+                            class="mt-8 grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-t border-white/10 pt-8"
                             aria-label="Pagination"
                         >
-                            @if ($page > 1)
-                                <a
-                                    href="{{ request()->fullUrlWithQuery([
-                                        'page' => $page - 1,
-                                    ]) }}"
-                                    class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-medium text-muted transition hover:border-crafthub/30 hover:text-text"
-                                >
-                                    <span>←</span>
-                                    Previous
-                                </a>
-                            @else
-                                <span
-                                    class="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/5 bg-surface/50 px-4 py-2.5 text-sm text-muted/40"
-                                >
-                                    <span>←</span>
-                                    Previous
-                                </span>
-                            @endif
+                            <div class="flex justify-start">
+                                @if ($page > 1)
+                                    <a
+                                        href="{{ request()->fullUrlWithQuery([
+                                            'page' => $page - 1,
+                                        ]) }}"
+                                        class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-medium text-muted transition hover:border-crafthub/30 hover:bg-surface-light hover:text-text"
+                                    >
+                                        <span>←</span>
+                                        Previous
+                                    </a>
+                                @else
+                                    <span
+                                        class="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/5 bg-surface/40 px-4 py-2.5 text-sm font-medium text-muted/30"
+                                    >
+                                        <span>←</span>
+                                        Previous
+                                    </span>
+                                @endif
+                            </div>
 
-                            <div class="flex items-center gap-1">
-                                @php
-                                    $start = max(1, $page - 2);
-                                    $end = min($lastPage, $page + 2);
-                                @endphp
-
+                            <div class="flex items-center justify-center gap-1">
                                 @if ($start > 1)
                                     <a
-                                        href="{{ request()->fullUrlWithQuery(['page' => 1]) }}"
-                                        class="flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-sm text-muted transition hover:bg-surface hover:text-text"
+                                        href="{{ request()->fullUrlWithQuery([
+                                            'page' => 1,
+                                        ]) }}"
+                                        class="flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium text-muted transition hover:bg-surface hover:text-text"
                                     >
                                         1
                                     </a>
 
                                     @if ($start > 2)
-                                        <span class="px-1 text-muted"> … </span>
+                                        <span
+                                            class="flex h-9 min-w-9 items-center justify-center text-sm text-muted"
+                                        >
+                                            …
+                                        </span>
                                     @endif
                                 @endif
 
                                 @for ($i = $start; $i <= $end; $i++)
                                     @if ($i === $page)
                                         <span
-                                            class="flex h-9 min-w-9 items-center justify-center rounded-lg bg-crafthub px-2 text-sm font-semibold text-background"
+                                            class="flex h-9 min-w-9 items-center justify-center rounded-lg bg-crafthub px-3 text-sm font-semibold text-background"
                                         >
                                             {{ $i }}
                                         </span>
@@ -278,7 +259,7 @@
                                             href="{{ request()->fullUrlWithQuery([
                                                 'page' => $i,
                                             ]) }}"
-                                            class="flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-sm text-muted transition hover:bg-surface hover:text-text"
+                                            class="flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium text-muted transition hover:bg-surface hover:text-text"
                                         >
                                             {{ $i }}
                                         </a>
@@ -287,34 +268,45 @@
 
                                 @if ($end < $lastPage)
                                     @if ($end < $lastPage - 1)
-                                        <span class="px-1 text-muted"> … </span>
+                                        <span
+                                            class="flex h-9 min-w-9 items-center justify-center text-sm text-muted"
+                                        >
+                                            …
+                                        </span>
                                     @endif
 
                                     <a
-                                        href="{{ request()->fullUrlWithQuery(['page' => $lastPage]) }}"
-                                        class="flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-sm text-muted transition hover:bg-surface hover:text-text"
+                                        href="{{ request()->fullUrlWithQuery([
+                                            'page' => $lastPage,
+                                        ]) }}"
+                                        class="flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium text-muted transition hover:bg-surface hover:text-text"
                                     >
                                         {{ $lastPage }}
                                     </a>
                                 @endif
                             </div>
 
-                            @if ($page < $lastPage)
-                                <a
-                                    href="{{ request()->fullUrlWithQuery(['page' => $page + 1]) }}"
-                                    class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-medium text-muted transition hover:border-crafthub/30 hover:text-text"
-                                >
-                                    Next
-                                    <span>→</span>
-                                </a>
-                            @else
-                                <span
-                                    class="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/5 bg-surface/50 px-4 py-2.5 text-sm text-muted/40"
-                                >
-                                    Next
-                                    <span>→</span>
-                                </span>
-                            @endif
+                            {{-- Next --}}
+                            <div class="flex justify-end">
+                                @if ($page < $lastPage)
+                                    <a
+                                        href="{{ request()->fullUrlWithQuery([
+                                            'page' => $page + 1,
+                                        ]) }}"
+                                        class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-surface px-4 py-2.5 text-sm font-medium text-muted transition hover:border-crafthub/30 hover:bg-surface-light hover:text-text"
+                                    >
+                                        Next
+                                        <span>→</span>
+                                    </a>
+                                @else
+                                    <span
+                                        class="inline-flex cursor-not-allowed items-center gap-2 rounded-xl border border-white/5 bg-surface/40 px-4 py-2.5 text-sm font-medium text-muted/30"
+                                    >
+                                        Next
+                                        <span>→</span>
+                                    </span>
+                                @endif
+                            </div>
                         </nav>
                     @endif
                 </div>

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ModrinthProject;
-use App\Services\ModrinthService;
+use App\Services\ProjectSearchService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class SearchController extends Controller
 {
-    public function __invoke(Request $request, ModrinthService $modrinth): mixed
+    public function __invoke(Request              $request,
+                             ProjectSearchService $searchService
+    ): mixed
     {
         $validated = $request->validate([
             'q' => ['nullable', 'string', 'max:255'],
@@ -27,32 +28,27 @@ class SearchController extends Controller
         ]);
 
         $query = trim($validated['q'] ?? '');
-        $page = (int) ($validated['page'] ?? 1);
+        $page = max(1, (int)($validated['page'] ?? 1));
 
-        $limit = 20;
-        $offset = ($page - 1) * $limit;
+        $perPage = 20;
 
-        $result = $modrinth->search(
+        $result = $searchService->search(
             query: $query,
             version: $validated['version'] ?? null,
             loader: $validated['loader'] ?? null,
             type: $validated['type'] ?? null,
             sort: $validated['sort'] ?? 'relevance',
-            limit: $limit,
-            offset: $offset
+            page: $page,
+            perPage: $perPage
         );
 
-        $projects = collect($result['hits'] ?? [])
-            ->map(fn(array $project) => new ModrinthProject($project));
-
-        $total = $result['total_hits'] ?? 0;
-
         return view('search', [
-            'projects' => $projects,
-            'total' => $result['total_hits'] ?? 0,
+            'projects' => $result['projects'],
+            'total' => $result['total'],
             'query' => $query,
-            'page' => $page,
-            'lastPage' => max(1, (int) ceil($total / $limit))
+            'page' => $result['page'],
+            'lastPage' => $result['lastPage'],
+            'hasMore' => $result['hasMore']
         ]);
     }
 }

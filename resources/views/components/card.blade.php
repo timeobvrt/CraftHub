@@ -1,22 +1,46 @@
+@php use App\Models\Project; @endphp
 @props (['project'])
 
 @php
-    /** @var \App\Models\ModrinthProject $project */
+    /** @var Project $project */
+
+    $primarySource = collect($project->sources())
+        ->firstWhere('platform', 'modrinth')
+        ?? collect($project->sources())->first();
+
+    $additionalSources = collect($project->sources())
+        ->reject(
+            fn(array $source) =>
+                ($source['platform'] ?? null)
+                === ($primarySource['platform'] ?? null),
+        )
+        ->mapWithKeys(
+            fn(array $source) => [
+                $source['platform'] => (string) $source['id'],
+            ],
+        )
+        ->all();
+
+    $href = route('project.show', [
+        'provider' => $primarySource['platform'],
+        'id' => $primarySource['slug'] ?? $primarySource['id'],
+        'sources' => $additionalSources
+    ]);
 @endphp
 <a
-    href="{{ route('project.show', $project->slug() ?? $project->id())}}"
+    href="{{ $href }}"
+    rel="noopener noreferrer"
     class="group block overflow-hidden rounded-2xl border border-white/10 bg-surface transition duration-200 hover:border-crafthub/30 hover:bg-surface-light/50"
 >
     <div class="flex gap-5 p-5 sm:p-6">
         <div class="shrink-0">
-            @if (!empty($project->iconUrl()))
+            @if ($project->iconUrl())
                 <img
                     src="{{ $project->iconUrl() }}"
                     alt="{{ $project->name() }}"
                     loading="lazy"
                     class="h-16 w-16 rounded-xl object-cover sm:h-20 sm:w-20"
                 />
-
             @else
                 <div
                     class="flex h-16 w-16 items-center justify-center rounded-xl border border-white/5 bg-background sm:h-20 sm:w-20"
@@ -27,7 +51,6 @@
                         class="h-8 w-8 opacity-40"
                     />
                 </div>
-
             @endif
         </div>
 
@@ -42,11 +65,10 @@
                         {{ $project->name() }}
                     </h2>
 
-                    @if (!empty($project->author()))
+                    @if ($project->author())
                         <p class="mt-0.5 text-sm text-muted">
                             by {{ $project->author() }}
                         </p>
-
                     @endif
                 </div>
 
@@ -63,11 +85,10 @@
                 @endif
             </div>
 
-            @if (!empty($project->summary()))
+            @if ($project->summary())
                 <p class="mt-3 line-clamp-2 text-sm leading-6 text-muted">
                     {{ $project->summary() }}
                 </p>
-
             @endif
 
             <div class="mt-4 flex flex-wrap items-center gap-2">
@@ -80,16 +101,18 @@
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                         class="h-3.5 w-3.5"
                     >
-                        <path d="M12 3v12"></path>
-                        <path d="m7 10 5 5 5-5"></path>
-                        <path d="M5 21h14"></path>
+                        <path d="M12 3v12" />
+                        <path d="m7 10 5 5 5-5" />
+                        <path d="M5 21h14" />
                     </svg>
 
                     {{
                         number_format(
-                            $project->downloads() ?? 0,
+                            $project->downloads(),
                             0,
                             ',',
                             ' ',
@@ -97,28 +120,32 @@
                     }}
                 </span>
 
-                @foreach (array_slice($project->categories() ?? [], 0, 4) as $category)
-                    <span
-                        class="rounded-lg border border-white/5 bg-background px-2 py-1 text-xs text-muted"
-                    >
+                @foreach (array_slice($project->categories(), 0, 4) as $category)
+                    <span class="rounded-lg border border-white/5 bg-background px-2 py-1 text-xs text-muted">
                         {{ $category }}
                     </span>
-
                 @endforeach
             </div>
-        </div>
 
-        <div class="hidden shrink-0 items-center sm:flex">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="h-5 w-5 text-muted transition group-hover:translate-x-1 group-hover:text-crafthub"
-            >
-                <path d="m9 18 6-6-6-6"></path>
-            </svg>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+                <span class="text-xs text-muted">Available on</span>
+
+                @if ($project->hasSource('modrinth'))
+                    <span
+                        class="rounded-lg border border-white/10 bg-background px-2.5 py-1 text-xs font-medium text-text"
+                    >
+                        Modrinth
+                    </span>
+                @endif
+
+                @if ($project->hasSource('spigot'))
+                    <span
+                        class="rounded-lg border border-white/10 bg-background px-2.5 py-1 text-xs font-medium text-text"
+                    >
+                        SpigotMC
+                    </span>
+                @endif
+            </div>
         </div>
     </div>
 </a>

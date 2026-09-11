@@ -6,7 +6,7 @@
 <header
     class="sticky top-0 z-50 border-b border-white/5 bg-background/85 backdrop-blur-xl"
 >
-    <div class="mx-auto flex h-[72px] max-w-7xl items-center gap-8 px-6">
+    <div class="mx-auto flex h-18 max-w-7xl items-center gap-8 px-6">
         <a href="{{ route('home') }}" class="flex shrink-0 items-center">
             <img
                 src="{{ asset('crafthub-text-horizontal.svg') }}"
