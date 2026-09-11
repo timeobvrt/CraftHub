@@ -8,7 +8,7 @@ RUN bun install --frozen-lockfile
 COPY . .
 RUN bun run build
 
-FROM php:8.4-fpm
+FROM php:8.5-fpm
 
 WORKDIR /var/www/html
 
