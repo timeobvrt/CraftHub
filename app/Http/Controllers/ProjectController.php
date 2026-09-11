@@ -150,6 +150,18 @@ class ProjectController extends Controller
                 ->all(),
             downloadUrl: $primary->downloadUrl
             ?? collect($others)->pluck('downloadUrl')->filter()->first(),
+            downloads: collect([$primary, ...$others])
+                ->flatMap(fn(
+                    ProjectDetails $details
+                ) => $details->downloads)
+                ->filter(fn(
+                    $download
+                ) => is_array($download) && !empty($download['url']))
+                ->unique(fn(
+                    array $download
+                ) => ($download['provider'] ?? '') . ':' . ($download['url'] ?? ''))
+                ->values()
+                ->all(),
             metadata: $primary->metadata,
         );
     }

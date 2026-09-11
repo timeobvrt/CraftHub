@@ -28,7 +28,8 @@
             this.open = false;
         }
     }"
-    class="relative"
+    x-modelable="value"
+    {{ $attributes->class(['relative'])  }}
     @keydown.escape.window="open = false"
 >
     @if ($label)
@@ -145,6 +146,6 @@
     </div>
 
     @error ($name)
-        <p class="mt-2 text-xs text-red-400">{{ $message }}</p>
+    <p class="mt-2 text-xs text-red-400">{{ $message }}</p>
     @enderror
 </div>

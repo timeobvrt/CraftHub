@@ -153,6 +153,42 @@ readonly class ModrinthProjectProvider implements ProjectProvider
                     ->first()
                 : null;
 
+            $downloads = collect($versions)
+                ->flatMap(function (
+                    array $version
+                ) {
+                    return collect($version['files'] ?? [])
+                        ->map(function (
+                            array $file
+                        ) use
+                        (
+                            $version
+                        ) {
+                            $url = $file['url'] ?? null;
+
+                            if (!$url) {
+                                return null;
+                            }
+
+                            return [
+                                'provider' => 'modrinth',
+                                'provider_label' => 'Modrinth',
+                                'name' => $version['name'] ?? $version['version_number'] ?? 'Modrinth version',
+                                'version_number' => $version['version_number'] ?? null,
+                                'game_versions' => array_values((array)($version['game_versions'] ?? [])),
+                                'loaders' => array_values((array)($version['loaders'] ?? [])),
+                                'release_type' => $version['version_type'] ?? null,
+                                'published_at' => $version['date_published'] ?? null,
+                                'url' => $url,
+                                'filename' => $file['filename'] ?? null,
+                                'primary' => (bool)($file['primary'] ?? false),
+                            ];
+                        });
+                })
+                ->filter()
+                ->values()
+                ->all();
+
             return new ProjectDetails(
                 project: $this->normalize($data),
                 description: $modrinthProject->description(),
@@ -165,6 +201,7 @@ readonly class ModrinthProjectProvider implements ProjectProvider
                 versions: $versions,
                 links: $modrinthProject->links(),
                 downloadUrl: $latestFile['url'] ?? null,
+                downloads: $downloads,
                 metadata: [
                     'raw' => $data,
                 ],

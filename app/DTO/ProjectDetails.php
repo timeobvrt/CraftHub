@@ -19,6 +19,7 @@ final readonly class ProjectDetails
         public array   $versions = [],
         public array   $links = [],
         public ?string $downloadUrl = null,
+        public array   $downloads = [],
         public array   $metadata = [],
     )
     {

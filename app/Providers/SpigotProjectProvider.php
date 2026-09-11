@@ -83,6 +83,32 @@ readonly class SpigotProjectProvider implements ProjectProvider
             $project = $this->spigot->project($id);
             $source = $project->source('spigot');
 
+            $downloads = [];
+
+            if (!empty($source['download_url'])) {
+                $downloads[] = [
+                    'provider' => 'spigot',
+                    'provider_label' => 'SpigotMC',
+                    'name' => $project->name(),
+                    'version_number' => null,
+                    'game_versions' => array_values(
+                        $project->versions()
+                    ),
+                    'loaders' => [
+                        'spigot',
+                        'bukkit',
+                        'paper',
+                        'purpur',
+                        'bungeecord'
+                    ],
+                    'release_type' => 'release',
+                    'published_at' => null,
+                    'url' => $source['download_url'],
+                    'filename' => null,
+                    'primary' => true
+                ];
+            }
+
             return new ProjectDetails(
                 project: $project,
                 description: $project->summary(),
@@ -94,6 +120,7 @@ readonly class SpigotProjectProvider implements ProjectProvider
                     ],
                 ],
                 downloadUrl: $source['download_url'] ?? $source['url'] ?? null,
+                downloads: $downloads,
             );
         } catch (\Throwable $throwable) {
             report($throwable);

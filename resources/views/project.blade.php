@@ -146,6 +146,48 @@
             'external' => $platform !== 'modrinth',
         ]);
     }
+
+    $downloads = collect($details->downloads)
+        ->filter(
+            fn($download) =>
+                is_array($download)
+                && !empty($download['url']),
+        )
+        ->values();
+
+    $downloadLoaders = $downloads
+        ->flatMap(
+            fn(array $download) => $download['loaders'] ?? [],
+        )
+        ->filter()
+        ->map(
+            fn($loader) => strtolower((string) $loader),
+        )
+        ->unique()
+        ->sort()
+        ->mapWithKeys(
+            fn($loader) => [
+                $loader => ucfirst($loader),
+            ],
+        );
+
+    $downloadGameVersions = $downloads
+        ->flatMap(
+            fn(array $download) => $download['game_versions'] ?? [],
+        )
+        ->filter()
+        ->map(
+            fn($version) => (string) $version,
+        )
+        ->unique()
+        ->sort(
+            fn($a, $b) => version_compare($b, $a),
+        )
+        ->mapWithKeys(
+            fn($version) => [
+                $version => 'Minecraft ' . $version,
+            ],
+        );
 @endphp
 
 <x-layouts.app :title="$project->name() . ' - CraftHub'" :show-search="true">
@@ -239,40 +281,29 @@
                         @endif
                     </div>
                 </div>
-                @if ($downloadLinks->isNotEmpty())
-                    <div class="mt-6 flex shrink-0 flex-wrap gap-3 sm:mt-0">
-                        @foreach ($downloadLinks as $index => $download)
-                            <a
-                                href="{{ $download['url'] }}"
-                                @if ($download['external'])
-                                    target="_blank"
-                                rel="noopener noreferrer"
-                                @endif
-                                @class([
-                                    'inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition',
-                                    'bg-crafthub text-background hover:bg-crafthub-light' =>
-                                        $index === 0,
-                                    'border border-white/10 bg-surface text-text hover:border-crafthub/30' =>
-                                        $index !== 0,
-                                ])
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    class="h-4 w-4"
-                                >
-                                    <path d="M12 3v12" />
-                                    <path d="m7 10 5 5 5-5" />
-                                    <path d="M5 21h14" />
-                                </svg>
+                @if ($downloads->isNotEmpty())
+                    <button
+                        x-data
+                        type="button"
+                        @click="$dispatch('open-download-modal')"
+                        class="mt-6 inline-flex shrink-0 items-center gap-2 rounded-xl bg-crafthub px-5 py-3 text-sm font-semibold text-background transition hover:bg-crafthub-light sm:mt-0"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            class="h-4 w-4"
+                        >
+                            <path d="M12 3v12" />
+                            <path d="m7 10 5 5 5-5" />
+                            <path d="M5 21h14" />
+                        </svg>
 
-                                {{ $download['label'] }}
-                            </a>
-                        @endforeach
-                    </div>
+                        Download
+                    </button>
+
                 @endif
             </div>
         </section>
@@ -739,4 +770,9 @@
             </aside>
         </div>
     </div>
+
+    @if ($downloads->isNotEmpty())
+        <x-modal-download :downloads="$downloads" :project="$project" :download-loaders="$downloadLoaders"
+                          :download-game-versions="$downloadGameVersions" />
+    @endif
 </x-layouts.app>
