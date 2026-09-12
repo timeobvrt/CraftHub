@@ -21,6 +21,7 @@ final readonly class ProjectDetails
         public ?string $downloadUrl = null,
         public array   $downloads = [],
         public array   $metadata = [],
+        public int     $likes = 0,
     )
     {
     }

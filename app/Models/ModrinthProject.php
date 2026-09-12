@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-class ModrinthProject
+readonly class ModrinthProject
 {
     public function __construct(
-        private readonly array $data,
+        private array $data,
     ) {}
 
     public function id(): string

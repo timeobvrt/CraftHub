@@ -17,6 +17,7 @@ readonly class Project
         private array   $loaders,
         private array   $projectTypes,
         private array   $sources,
+        private int     $likes
     )
     {
     }
@@ -101,5 +102,10 @@ readonly class Project
         }
 
         return null;
+    }
+
+    public function likes(): int
+    {
+        return $this->likes;
     }
 }

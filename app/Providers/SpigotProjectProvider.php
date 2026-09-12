@@ -112,6 +112,7 @@ readonly class SpigotProjectProvider implements ProjectProvider
             return new ProjectDetails(
                 project: $project,
                 description: $project->summary(),
+                followers: $project->likes(),
                 versions: $project->versions(),
                 links: [
                     'spigot' => [

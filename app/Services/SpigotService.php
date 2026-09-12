@@ -195,6 +195,7 @@ class SpigotService
                     'download_url' => self::BASE_URL . '/resources/' . $id . '/download',
                 ],
             ],
+            likes: $resource['likes']
         );
     }
 
