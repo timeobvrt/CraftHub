@@ -121,7 +121,9 @@
                 </span>
 
                 @foreach (array_slice($project->categories(), 0, 4) as $category)
-                    <span class="rounded-lg border border-white/5 bg-background px-2 py-1 text-xs text-muted">
+                    <span
+                        class="rounded-lg border border-white/5 bg-background px-2 py-1 text-xs text-muted"
+                    >
                         {{ $category }}
                     </span>
                 @endforeach
@@ -130,20 +132,12 @@
             <div class="mt-4 flex flex-wrap items-center gap-2">
                 <span class="text-xs text-muted">Available on</span>
 
-                @if ($project->hasSource('modrinth'))
-                    <span
-                        class="rounded-lg border border-white/10 bg-background px-2.5 py-1 text-xs font-medium text-text"
-                    >
-                        Modrinth
-                    </span>
-                @endif
-
-                @if ($project->hasSource('spigot'))
-                    <span
-                        class="rounded-lg border border-white/10 bg-background px-2.5 py-1 text-xs font-medium text-text"
-                    >
-                        SpigotMC
-                    </span>
+                @if (!empty($project->sources()))
+                    <p class="text-xs font-medium text-text">
+                        @foreach ($project->sources() as $source)
+                            {{ ucfirst($source['platform']) }}
+                        @endforeach
+                    </p>
                 @endif
             </div>
         </div>

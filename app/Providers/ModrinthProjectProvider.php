@@ -18,11 +18,13 @@ readonly class ModrinthProjectProvider implements ProjectProvider
     {
     }
 
+    #[\Override]
     public function key(): string
     {
         return 'modrinth';
     }
 
+    #[\Override]
     public function supports(
         ProjectSearchQuery $query
     ): bool
@@ -30,6 +32,7 @@ readonly class ModrinthProjectProvider implements ProjectProvider
         return true;
     }
 
+    #[\Override]
     public function search(
         ProjectSearchQuery $query,
         int                $limit,
@@ -132,9 +135,11 @@ readonly class ModrinthProjectProvider implements ProjectProvider
                     'url' => 'https://modrinth.com/project/' . $slug,
                 ],
             ],
+            likes: $data['followers'] ?? $data['follows']
         );
     }
 
+    #[\Override]
     public function project(string $id): ?ProjectDetails
     {
         try {
@@ -192,7 +197,6 @@ readonly class ModrinthProjectProvider implements ProjectProvider
             return new ProjectDetails(
                 project: $this->normalize($data),
                 description: $modrinthProject->description(),
-                followers: $modrinthProject->followers(),
                 publishedAt: $modrinthProject->publishedAt(),
                 updatedAt: $modrinthProject->updatedAt(),
                 license: $modrinthProject->license()?->name(),
@@ -205,6 +209,7 @@ readonly class ModrinthProjectProvider implements ProjectProvider
                 metadata: [
                     'raw' => $data,
                 ],
+                likes: $modrinthProject->followers()
             );
         } catch (\Throwable $throwable) {
             report($throwable);

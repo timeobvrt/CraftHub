@@ -110,6 +110,10 @@ class ProjectController extends Controller
                     )
                     ->values()
                     ->all(),
+                likes: max(
+                    $project->likes(),
+                    $other->likes()
+                ),
             );
         }
 
@@ -117,13 +121,13 @@ class ProjectController extends Controller
             project: $project,
             description: $primary->description
             ?? collect($others)->pluck('description')->filter()->first(),
-            followers: collect([
-            $primary->followers,
-            ...collect($others)->pluck('followers')->all()
-        ])
+            likes: collect([
+                $primary->likes,
+                ...collect($others)->pluck('likes')->all()
+            ])
             ->map(fn(
-                $followers
-            ) => $followers)
+                $likes
+            ) => $likes)
             ->max() ?? 0,
             publishedAt: $primary->publishedAt,
             updatedAt: $primary->updatedAt,

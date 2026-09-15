@@ -258,27 +258,25 @@
                             </span>
                         </div>
 
-                        @if ($details->followers > 0)
-                            <div class="flex items-center gap-2 text-sm text-muted">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    class="h-4 w-4"
-                                >
-                                    <path
-                                        d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
-                                    />
-                                </svg>
+                        <div class="flex items-center gap-2 text-sm text-muted">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                class="h-4 w-4"
+                            >
+                                <path
+                                    d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
+                                />
+                            </svg>
 
-                                <span>
-                                    {{ number_format($details->followers, 0, ',', ' ') }}
-                                    followers
-                                </span>
-                            </div>
-                        @endif
+                            <span>
+                                {{ number_format($details->likes, 0, ',', ' ') }}
+                                followers
+                            </span>
+                        </div>
                     </div>
                 </div>
                 @if ($downloads->isNotEmpty())

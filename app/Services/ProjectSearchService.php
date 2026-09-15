@@ -249,6 +249,7 @@ final readonly class ProjectSearchService
                 )
                 ->values()
                 ->all(),
+            likes: max($primary->likes(), $secondary->likes())
         );
     }
 

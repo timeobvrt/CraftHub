@@ -43,7 +43,6 @@
 >
     <div class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
         <div class="mb-10">
-            <p class="text-sm font-semibold text-crafthub">Search results</p>
             <div
                 class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
             >

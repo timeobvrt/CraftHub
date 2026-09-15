@@ -10,7 +10,6 @@ final readonly class ProjectDetails
     public function __construct(
         public Project $project,
         public ?string $description = null,
-        public int     $followers = 0,
         public ?string $publishedAt = null,
         public ?string $updatedAt = null,
         public ?string $license = null,
