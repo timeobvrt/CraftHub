@@ -1,6 +1,6 @@
 <x-layouts.app title="CraftHub">
     <main>
-        <section class="relative overflow-hidden border-b border-white/5">
+        <section class="relative overflow-hidden">
             <div class="pointer-events-none absolute inset-0 -z-10">
                 <div
                     class="absolute left-1/2 -top-55 h-150 w-255 -translate-x-1/2 rounded-full bg-crafthub/10 blur-[130px]"

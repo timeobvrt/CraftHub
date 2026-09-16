@@ -516,109 +516,22 @@
                                     href="{{ $link['url'] }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="group flex w-full items-center gap-3 rounded-xl border border-white/5 bg-background px-3.5 py-3 text-sm text-muted transition hover:border-crafthub/30 hover:text-text"
+                                    class="group flex w-full items-center gap-3 rounded-xl text-sm text-muted transition hover:border-crafthub/30 hover:text-text"
                                 >
-                                    <div
-                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 text-muted transition group-hover:bg-crafthub/10 group-hover:text-crafthub"
-                                    >
-                                        @switch ($key)
-                                            @case ('source')
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    class="h-4 w-4"
-                                                >
-                                                    <path d="m18 16 4-4-4-4" />
-                                                    <path d="m6 8-4 4 4 4" />
-                                                    <path d="m14.5 4-5 16" />
-                                                </svg>
-                                                @break
-                                            @case ('issues')
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    class="h-4 w-4"
-                                                >
-                                                    <circle cx="12" cy="12" r="10" />
-                                                    <path d="M12 8v4" />
-                                                    <path d="M12 16h.01" />
-                                                </svg>
-                                                @break
-                                            @case ('wiki')
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    class="h-4 w-4"
-                                                >
-                                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                                    <path
-                                                        d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
-                                                </svg>
-                                                @break
-                                            @case ('discord')
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    class="h-4 w-4"
-                                                >
-                                                    <path d="M8 12h.01" />
-                                                    <path d="M16 12h.01" />
-                                                    <path d="M7.5 7.2A10.5 10.5 0 0 1 12 6a10.5 10.5 0 0 1 4.5 1.2" />
-                                                    <path d="M8.5 17.5a6.6 6.6 0 0 0 7 0" />
-                                                </svg>
-                                                @break
-                                            @default
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    stroke-width="2"
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    class="h-4 w-4"
-                                                >
-                                                    <path
-                                                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                                                    <path
-                                                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                                                </svg>
-                                        @endswitch
-                                    </div>
-
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-medium text-text">
-                                            {{ $link['label'] }}
-                                        </p>
-
-                                        <p class="truncate text-xs text-muted">
-                                            {{
-                                                parse_url(
-                                                    $link['url'],
-                                                    PHP_URL_HOST,
-                                                )
-                                            }}
-                                        </p>
+                                    <div class="min-w-0 flex-1 group">
+                                        <span class="flex gap-3">
+                                            <p class="text-sm font-medium text-text group-hover:underline">
+                                                {{ $link['label'] }}
+                                            </p>
+                                            <p class="truncate text-xs text-muted">
+                                                {{
+                                                    parse_url(
+                                                        $link['url'],
+                                                        PHP_URL_HOST,
+                                                    )
+                                                }}
+                                            </p>
+                                        </span>
                                     </div>
 
                                     <svg
