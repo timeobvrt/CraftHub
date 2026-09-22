@@ -1,8 +1,10 @@
 @php
-    /** @var \App\DTO\ProjectDetails $details */
-    /** @var \App\Models\Project $project */
+    /** @var ProjectDetails $details */
+    /** @var Project $project */
 
-    use Carbon\Carbon;$projectTypes = collect($project->projectTypes())
+    use App\DTO\ProjectDetails;use App\Models\Project;use Carbon\Carbon;
+
+    $projectTypes = collect($project->projectTypes())
         ->filter()
         ->unique()
         ->values();
@@ -23,8 +25,7 @@
         )
         ->values();
 
-    $description = $details->description
-        ?: $project->summary();
+    $description = $details->description ?: $project->summary();
 
     $gallery = collect($details->gallery)
         ->filter()
@@ -156,9 +157,7 @@
         ->values();
 
     $downloadLoaders = $downloads
-        ->flatMap(
-            fn(array $download) => $download['loaders'] ?? [],
-        )
+        ->flatMap(fn(array $download) => $download['loaders'] ?? [])
         ->filter()
         ->map(
             fn($loader) => strtolower((string) $loader),
@@ -190,136 +189,95 @@
         );
 @endphp
 
-<x-layouts.app :title="$project->name() . ' - CraftHub'" :show-search="true">
-    <div class="mx-auto max-w-7xl px-6 py-10 lg:py-14">
-        <section>
+<x-layouts.app
+    :title="$project->name() . ' - CraftHub'"
+    :show-search="true"
+>
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-12">
+        <header>
             <div class="flex flex-col gap-6 sm:flex-row sm:items-start">
                 <div class="shrink-0">
-                    @if (!empty($project->iconUrl()))
+                    @if ($project->iconUrl())
                         <img
                             src="{{ $project->iconUrl() }}"
                             alt="{{ $project->name() }}"
-                            class="h-24 w-24 rounded-2xl object-cover sm:h-28 sm:w-28"
+                            class="h-24 w-24 object-cover sm:h-28 sm:w-28"
                         />
                     @else
-                        <div
-                            class="flex h-24 w-24 items-center justify-center rounded-2xl border border-white/10 bg-surface sm:h-28 sm:w-28"
-                        >
+                        <div class="flex h-24 w-24 items-center justify-center sm:h-28 sm:w-28 bg-surface">
                             <img
                                 src="{{ asset('crafthub.svg') }}"
                                 alt=""
-                                class="h-12 w-12 opacity-40"
+                                class="h-11 w-11 opacity-20"
                             />
                         </div>
                     @endif
                 </div>
 
                 <div class="min-w-0 flex-1">
-                    <h1
-                        class="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
-                    >
+                    <h1 class="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
                         {{ $project->name() }}
                     </h1>
 
-                    @if (!empty($project->summary()))
-                        <p
-                            class="mt-4 max-w-3xl text-base leading-7 text-muted sm:text-lg"
-                        >
+                    @if ($project->author())
+                        <p class="mt-2 text-sm text-muted">
+                            by
+                            <span class="text-text">
+                                {{ $project->author() }}
+                            </span>
+                        </p>
+                    @endif
+
+                    @if ($project->summary())
+                        <p class="mt-4 max-w-3xl text-sm leading-6 text-muted sm:text-base sm:leading-7">
                             {{ $project->summary() }}
                         </p>
                     @endif
 
-                    <div
-                        class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3"
-                    >
-                        <div class="flex items-center gap-2 text-sm text-muted">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                class="h-4 w-4"
-                            >
-                                <path d="M12 3v12"></path>
-                                <path d="m7 10 5 5 5-5"></path>
-                                <path d="M5 21h14"></path>
-                            </svg>
+                    <div class="mt-5 flex flex-wrap gap-x-5 gap-y-2">
 
-                            <span>
-                                {{
-                                    number_format(
-                                        $project->downloads(),
-                                        0,
-                                        ',',
-                                        ' ',
-                                    )
-                                }} downloads
-                            </span>
-                        </div>
+                        <span class="inline-flex items-center gap-2 text-xs text-muted">
+                            <i class="fa-pixel fa-regular fa-arrow-down-to-bracket h-3.5 w-3.5"></i>
+                            {{ number_format($project->downloads(), 0, ',', ' ') }}
+                            downloads
+                        </span>
 
-                        <div class="flex items-center gap-2 text-sm text-muted">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                class="h-4 w-4"
-                            >
-                                <path
-                                    d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
-                                />
-                            </svg>
-
-                            <span>
-                                {{ number_format($details->likes, 0, ',', ' ') }}
-                                followers
-                            </span>
-                        </div>
+                        <span class="inline-flex items-center gap-2 text-xs text-muted">
+                            <i class="fa-pixel fa-regular fa-heart h-3.5 w-3.5"></i>
+                            {{ number_format($details->likes, 0, ',', ' ') }}
+                            followers
+                        </span>
                     </div>
                 </div>
+
                 @if ($downloads->isNotEmpty())
-                    <button
+                    <x-button
                         x-data
                         type="button"
                         @click="$dispatch('open-download-modal')"
-                        class="mt-6 inline-flex shrink-0 items-center gap-2 rounded-xl bg-crafthub px-5 py-3 text-sm font-semibold text-background transition hover:bg-crafthub-light sm:mt-0"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            class="h-4 w-4"
-                        >
-                            <path d="M12 3v12" />
-                            <path d="m7 10 5 5 5-5" />
-                            <path d="M5 21h14" />
-                        </svg>
-
+                        <i class="fa-pixel fa-regular fa-arrow-down-to-bracket"></i>
                         Download
-                    </button>
-
+                    </x-button>
                 @endif
             </div>
-        </section>
+        </header>
 
-        <div class="my-10 border-t border-white/5"></div>
-
-        <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <article x-data="{ tab: 'description' }" class="min-w-0">
-                <div
-                    class="mb-6 flex items-center gap-6 border-b border-white/5"
-                >
+        <div class="grid gap-8 pt-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <article
+                x-data="{ tab: 'description' }"
+                class="min-w-0"
+            >
+                <div class="mb-7 flex items-stretch gap-2">
                     <button
                         type="button"
                         @click="tab = 'description'"
-                        class="pb-3 text-sm font-semibold transition"
-                        :class="tab === 'description'
-                            ? 'border-b-2 border-crafthub text-text'
-                            : 'text-muted hover:text-text'"
+                        class="px-4 py-3 text-sm font-medium font-pixel transition-colors cursor-pointer"
+                        :class="
+                            tab === 'description'
+                                ? 'bg-crafthub text-background'
+                                : 'text-muted hover:text-text'
+                        "
                     >
                         Description
                     </button>
@@ -327,32 +285,43 @@
                     <button
                         type="button"
                         @click="tab = 'gallery'"
-                        class="pb-3 text-sm font-semibold transition"
-                        :class="tab === 'gallery'
-                            ? 'border-b-2 border-crafthub text-text'
-                            : 'text-muted hover:text-text'"
+                        class="px-4 py-3 text-sm font-medium font-pixel transition-colors cursor-pointer"
+                        :class="
+                            tab === 'gallery'
+                                ? 'bg-crafthub text-background'
+                                : 'text-muted hover:text-text'
+                        "
                     >
                         Gallery
+                    </button>
+
+                    <button
+                        type="button"
+                        @click="tab = 'versions'"
+                        class="px-4 py-3 text-sm font-medium font-pixel transition-colors cursor-pointer"
+                        :class="
+                            tab === 'versions'
+                                ? 'bg-crafthub text-background'
+                                : 'text-muted hover:text-text'
+                        "
+                    >
+                        Versions
                     </button>
                 </div>
 
                 <div x-show="tab === 'description'" x-cloak>
-                    @if (!empty($description))
-                        <div
-                            class="prose prose-invert max-w-none prose-headings:text-text prose-p:text-muted prose-strong:text-text prose-a:text-crafthub prose-a:no-underline hover:prose-a:text-crafthub-light prose-code:text-crafthub-light prose-pre:border prose-pre:border-white/10 prose-pre:bg-surface"
-                        >
-                            {!!
-                                Str::markdown(
-                                    $description,
-                                )
-                            !!}
+                    @if ($description)
+                        <div class="markdown">
+                            {!! Str::markdown($description) !!}
                         </div>
                     @else
-                        <div
-                            class="rounded-2xl border border-white/10 bg-surface px-6 py-14 text-center"
-                        >
-                            <p class="text-sm text-muted">No description available for this project.</p>
+                        <div class="border border-white/10 bg-surface px-6 py-14 text-center">
+                            <i class="fa-pixel fa-regular fa-file mx-auto h-5 w-5 text-muted/50"></i>
+                            <p class="mt-3 text-sm text-muted">
+                                No description available for this project.
+                            </p>
                         </div>
+
                     @endif
                 </div>
 
@@ -373,15 +342,14 @@
                                         ? ($image['description'] ?? null)
                                         : $image->description();
                                 @endphp
-
                                 @if ($imageUrl)
                                     <a
                                         href="{{ $imageUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="group overflow-hidden rounded-2xl border border-white/10 bg-surface transition hover:border-crafthub/30"
+                                        class="group block overflow-hiddenbg-surface bg-surface"
                                     >
-                                        <div class="aspect-video overflow-hidden bg-background">
+                                        <div class="aspect-video overflow-hidden">
                                             <img
                                                 src="{{ $imageUrl }}"
                                                 alt="{{ $imageTitle ?: $project->name() }}"
@@ -391,15 +359,15 @@
                                         </div>
 
                                         @if ($imageTitle || $imageDescription)
-                                            <div class="p-4">
+                                            <div class="border-t border-white/5 p-4">
                                                 @if ($imageTitle)
-                                                    <h3 class="text-sm font-semibold text-text">
+                                                    <h3 class="text-sm font-medium text-text">
                                                         {{ $imageTitle }}
                                                     </h3>
                                                 @endif
 
                                                 @if ($imageDescription)
-                                                    <p class="mt-1 text-sm leading-6 text-muted">
+                                                    <p class="mt-1 text-xs leading-5 text-muted">
                                                         {{ $imageDescription }}
                                                     </p>
                                                 @endif
@@ -410,280 +378,232 @@
                             @endforeach
                         </div>
                     @else
-                        <div
-                            class="rounded-2xl border border-white/10 bg-surface px-6 py-14 text-center"
-                        >
-                            <p class="text-sm text-muted">
+                        <div class="border border-white/10 bg-surface px-6 py-14 text-center">
+                            <i class="fa-pixel fa-regular fa-images mx-auto h-5 w-5 text-muted/50"></i>
+                            <p class="mt-3 text-sm text-muted">
                                 No gallery available for this project.
+                            </p>
+                        </div>
+                    @endif
+                </div>
+
+                <div x-show="tab === 'versions'" x-cloak>
+                    @if ($versions->isNotEmpty())
+                        <div class="overflow-hidden border border-white/10 bg-surface">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead class="border-b border-white/10 bg-background/50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider text-muted">
+                                            Version
+                                        </th>
+
+                                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider text-muted">
+                                            Minecraft
+                                        </th>
+
+                                        <th class="px-4 py-3 text-[10px] uppercase tracking-wider text-muted">
+                                            Loader
+                                        </th>
+
+                                        <th class="px-4 py-3 text-right text-[10px] uppercase tracking-wider text-muted">
+                                            Download
+                                        </th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    @foreach ($versions as $version)
+                                        @php
+                                            $primaryFile = collect($version['files'] ?? [])
+                                                ->firstWhere('primary', true)
+                                                ?? collect($version['files'] ?? [])->first();
+
+                                            $gameVersions = collect($version['game_versions'] ?? [])
+                                                ->filter()
+                                                ->values();
+
+                                            $loaders = collect($version['loaders'] ?? [])
+                                                ->filter()
+                                                ->values();
+                                        @endphp
+
+                                        <tr class="border-b border-white/5 last:border-0 hover:bg-white/2">
+                                            <td class="px-4 py-4">
+                                                <div class="min-w-0">
+                                                    <p class="text-xs font-medium text-text">
+                                                        {{
+                                                            $version['name']
+                                                            ?? $version['version_number']
+                                                            ?? 'Unknown version'
+                                                        }}
+                                                    </p>
+
+                                                    @if (!empty($version['version_number']) && !empty($version['name']) && $version['name'] !== $version['version_number'])
+                                                        <p class="mt-1 text-[10px] text-muted">
+                                                            {{ $version['version_number'] }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                            </td>
+
+                                            <td class="px-4 py-4">
+                                                @if ($gameVersions->isNotEmpty())
+                                                    <div class="flex flex-wrap gap-1">
+                                                        <span class="text-[12px] text-muted">
+                                                            {{ implode(', ', $version['game_versions']) }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </td>
+
+                                            <td class="px-4 py-4">
+                                                @if ($loaders->isNotEmpty())
+                                                    <div class="flex flex-wrap gap-1">
+                                                        <span class="text-[12px] capitalize text-muted">
+                                                            {{ implode(', ', $version['loaders']) }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </td>
+
+                                            <td class="px-4 py-4 text-right">
+                                                @if ($primaryFile && !empty($primaryFile['url']))
+                                                    <x-button
+                                                        href="{{ $primaryFile['url'] }}"
+                                                        class="text-[10px]"
+                                                    >
+                                                        <i class="fa-pixel fa-regular fa-arrow-down-to-bracket"></i>
+                                                        Download
+                                                    </x-button>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    @else
+                        <div class="border border-white/10 bg-surface px-6 py-14 text-center">
+                            <i class="fa-pixel fa-regular fa-layer-group mx-auto h-5 w-5 text-muted/50"></i>
+                            <p class="mt-3 text-sm text-muted">
+                                No versions available.
                             </p>
                         </div>
                     @endif
                 </div>
             </article>
 
-            <aside class="space-y-5">
-                <div class="rounded-2xl border border-white/10 bg-surface p-5">
-                    <h2 class="font-semibold">Project information</h2>
+            <aside class="space-y-4">
+                <section class="border border-white/10 bg-surface p-5">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-pixel fa-regular fa-info-circle h-4 w-4 text-crafthub"></i>
+                        <h2 class="text-sm font-pixel">
+                            Information
+                        </h2>
+                    </div>
 
-                    <div class="mt-5 space-y-4">
-                        @if (!$projectTypes->isNotEmpty())
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wider text-muted">
-                                    Type
-                                </p>
-
-                                <div class="mt-2 flex flex-wrap gap-2">
-                                    @foreach ($projectTypes as $type)
-                                        <span
-                                            class="rounded-lg border border-crafthub/15 bg-crafthub/10 px-2.5 py-1 text-xs font-medium capitalize text-crafthub"
-                                        >
-                                            {{ $type }}
-                                        </span>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
+                    <dl class="mt-4 space-y-4">
                         @if ($details->environment)
-                            <div>
-                                <p class="text-xs font-medium uppercase tracking-wider text-muted">Environment</p>
-
-                                <p class="mt-1 text-sm text-text">
+                            <div class="space-y-1">
+                                <dt class="text-[10px] uppercase tracking-wider text-muted">
+                                    Environment
+                                </dt>
+                                <dd class="text-sm leading-relaxed text-text">
                                     {{ $details->environment }}
-                                </p>
+                                </dd>
                             </div>
                         @endif
-
-                        {{--                        @if ($details->lisence)--}}
-                        {{--                            <div>--}}
-                        {{--                                <p--}}
-                        {{--                                    class="text-xs font-medium uppercase tracking-wider text-muted"--}}
-                        {{--                                >License</p>--}}
-
-                        {{--                                <p class="mt-1 text-sm text-text">--}}
-                        {{--                                    {{--}}
-                        {{--                                        $project--}}
-                        {{--                                            ->license()--}}
-                        {{--                                            ->name()--}}
-                        {{--                                    }}--}}
-                        {{--                                </p>--}}
-                        {{--                            </div>--}}
-                        {{--                        @endif--}}
 
                         @if ($details->publishedAt)
-                            <div>
-                                <p
-                                    class="text-xs font-medium uppercase tracking-wider text-muted"
-                                >Published</p>
-
-                                <p class="mt-1 text-sm text-text">
-                                    {{
-                                        Carbon::parse(
-                                            $details->publishedAt,
-                                        )->format('M j, Y')
-                                    }}
-                                </p>
+                            <div class="flex items-center justify-between gap-4">
+                                <dt class="text-[10px] uppercase tracking-wider text-muted">
+                                    Published
+                                </dt>
+                                <dd class="text-sm text-text">
+                                    {{ Carbon::parse($details->publishedAt)->format('M j, Y') }}
+                                </dd>
                             </div>
                         @endif
 
                         @if ($details->updatedAt)
-                            <div>
-                                <p
-                                    class="text-xs font-medium uppercase tracking-wider text-muted"
-                                >Updated</p>
-
-                                <p class="mt-1 text-sm text-text">
-                                    {{
-                                        Carbon::parse(
-                                            $details->updatedAt,
-                                        )->format('M j, Y')
-                                    }}
-                                </p>
+                            <div class="flex items-center justify-between gap-4">
+                                <dt class="text-[10px] uppercase tracking-wider text-muted">
+                                    Updated
+                                </dt>
+                                <dd class="text-sm text-text">
+                                    {{ Carbon::parse($details->updatedAt)->format('M j, Y') }}
+                                </dd>
                             </div>
                         @endif
-                    </div>
-                </div>
+                    </dl>
+                </section>
 
                 @if ($projectLinks->isNotEmpty())
-                    <div
-                        class="rounded-2xl border border-white/10 bg-surface p-5"
-                    >
-                        <h2 class="font-semibold">Links</h2>
+                    <section class="border border-white/10 bg-surface p-5">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-pixel fa-regular fa-link h-4 w-4 text-crafthub"></i>
+                            <h2 class="text-sm font-pixel">
+                                Links
+                            </h2>
+                        </div>
 
-                        <div class="mt-4 space-y-2">
+                        <div class="mt-3">
                             @foreach ($projectLinks as $key => $link)
                                 <a
                                     href="{{ $link['url'] }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="group flex w-full items-center gap-3 rounded-xl text-sm text-muted transition hover:border-crafthub/30 hover:text-text"
+                                    class="group flex items-center gap-3 pb-2"
                                 >
-                                    <div class="min-w-0 flex-1 group">
-                                        <span class="flex gap-3">
-                                            <p class="text-sm font-medium text-text group-hover:underline">
-                                                {{ $link['label'] }}
-                                            </p>
-                                            <p class="truncate text-xs text-muted">
-                                                {{
-                                                    parse_url(
-                                                        $link['url'],
-                                                        PHP_URL_HOST,
-                                                    )
-                                                }}
-                                            </p>
-                                        </span>
-                                    </div>
+                                    <div class="min-w-0 flex justify-between items-center w-full">
+                                        <p class="truncate text-sm font-medium text-text group-hover:text-crafthub">
+                                            {{ $link['label'] }}
+                                        </p>
 
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        class="h-4 w-4 shrink-0 opacity-30 transition group-hover:opacity-100"
-                                    >
-                                        <path d="M15 3h6v6" />
-                                        <path d="M10 14 21 3" />
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                                    </svg>
+                                        <p class="truncate text-[10px] text-muted">
+                                            {{ parse_url($link['url'], PHP_URL_HOST) }}
+                                        </p>
+                                    </div>
+                                    <i class="fa-pixel fa-regular fa-arrow-up-right-from-square h-3.5 w-3.5 text-muted/40 group-hover:text-crafthub"></i>
                                 </a>
                             @endforeach
                         </div>
-                    </div>
+                    </section>
                 @endif
 
                 @if ($categories->isNotEmpty())
-                    <div
-                        class="rounded-2xl border border-white/10 bg-surface p-5"
-                    >
-                        <h2 class="font-semibold">Categories</h2>
+                    <section class="border border-white/10 bg-surface p-5">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-pixel fa-regular fa-tag h-4 w-4 text-crafthub"></i>
+                            <h2 class="text-sm font-pixel">
+                                Categories
+                            </h2>
+                        </div>
 
-                        <div class="mt-4 flex flex-wrap gap-2">
+                        <div class="mt-4 flex flex-wrap gap-1.5">
                             @foreach ($categories as $category)
                                 <span
-                                    class="rounded-lg border border-white/5 bg-background px-2.5 py-1.5 text-xs capitalize text-muted"
+                                    class="border border-white/10 bg-background px-2 py-1 text-[10px] capitalize text-muted"
                                 >
                                     {{ $category }}
                                 </span>
                             @endforeach
                         </div>
-                    </div>
+                    </section>
                 @endif
-
-                <div
-                    x-data="{ showAll: false }"
-                    class="rounded-2xl border border-white/10 bg-surface p-5"
-                >
-                    <div class="flex items-center justify-between gap-4">
-                        <h2 class="font-semibold">Versions</h2>
-
-                        <span class="text-xs text-muted">
-                            {{ $versions->count() ?: $gameVersions->count() }}
-                        </span>
-                    </div>
-
-                    @if ($versions->isNotEmpty())
-                        <div class="mt-4 space-y-2">
-                            @foreach ($versions as $index => $version)
-                                @php
-                                    $primaryFile = collect($version['files'] ?? [])
-                                        ->firstWhere('primary', true)
-                                        ?? collect($version['files'] ?? [])->first();
-                                @endphp
-
-                                <div
-                                    x-show="showAll || {{ $index }} < 6"
-                                    x-cloak
-                                    class="rounded-xl border border-white/5 bg-background p-3.5"
-                                >
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="min-w-0 flex-1">
-                                            <p class="truncate text-sm font-medium text-text">
-                                                {{
-                                                    $version['name']
-                                                    ?? $version['version_number']
-                                                    ?? 'Unknown version'
-                                                }}
-                                            </p>
-
-                                            @if (!empty($version['game_versions']))
-                                                <p class="mt-1 truncate text-xs text-muted">
-                                                    {{
-                                                        implode(
-                                                            ', ',
-                                                            array_slice(
-                                                                $version['game_versions'],
-                                                                0,
-                                                                4,
-                                                            ),
-                                                        )
-                                                    }}
-                                                </p>
-                                            @endif
-                                        </div>
-
-                                        @if ($primaryFile && !empty($primaryFile['url']))
-                                            <a
-                                                href="{{ $primaryFile['url'] }}"
-                                                class="rounded-lg bg-crafthub px-2.5 py-1.5 text-xs font-semibold text-background"
-                                            >
-                                                Download
-                                            </a>
-                                        @endif
-                                    </div>
-
-                                    @if (!empty($version['loaders']))
-                                        <div class="mt-3 flex flex-wrap gap-1.5">
-                                            @foreach ($version['loaders'] as $loader)
-                                                <span
-                                                    class="rounded-md border border-white/5 px-1.5 py-0.5 text-[10px] capitalize text-muted"
-                                                >
-                                                    {{ $loader }}
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @elseif ($gameVersions->isNotEmpty())
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            @foreach ($gameVersions as $version)
-                                <span
-                                    class="rounded-lg border border-white/5 bg-background px-2.5 py-1.5 text-xs text-muted"
-                                >
-                                    Minecraft {{ $version }}
-                                </span>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="mt-4 text-sm text-muted">
-                            No versions available.
-                        </p>
-                    @endif
-
-                    @if ($versions->count() > 6)
-                        <button
-                            type="button"
-                            @click="showAll = !showAll"
-                            class="mt-4 w-full rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-muted"
-                        >
-                            <span x-show="!showAll">
-                                View all {{ $versions->count() }} versions
-                            </span>
-
-                            <span x-show="showAll">Show less</span>
-                        </button>
-                    @endif
-                </div>
             </aside>
         </div>
     </div>
 
     @if ($downloads->isNotEmpty())
-        <x-modal-download :downloads="$downloads" :project="$project" :download-loaders="$downloadLoaders"
-                          :download-game-versions="$downloadGameVersions" />
+        <x-modal-download
+            :downloads="$downloads"
+            :project="$project"
+            :download-loaders="$downloadLoaders"
+            :download-game-versions="$downloadGameVersions"
+        />
     @endif
+
 </x-layouts.app>

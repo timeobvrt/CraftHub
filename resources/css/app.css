@@ -1,13 +1,15 @@
 @import 'tailwindcss';
+@import "markdown.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+
+    --font-pixel: 'Pixelify Sans', sans-serif;
 
     --color-crafthub: #10b981;
     --color-crafthub-light: #34d399;
@@ -21,6 +23,24 @@
     --color-muted: #a1a1aa;
 }
 
+@layer base {
+    html {
+        background: var(--color-background);
+
+    }
+}
+
+@layer components {
+    .pixel-border {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pixel-border-green {
+        border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+}
+
 [x-cloak] {
     display: none !important;
 }
+

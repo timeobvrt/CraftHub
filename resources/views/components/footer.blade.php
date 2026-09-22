@@ -1,27 +1,40 @@
-<footer class="border-t border-white/5">
-    <div
-        class="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between"
-    >
-        <div class="flex items-center gap-4">
-            <img
-                src="{{ asset('crafthub.svg') }}"
-                alt="CraftHub"
-                class="h-8 w-8"
-            />
+<footer class="border-t border-white/10 bg-background">
 
-            <div>
-                <p class="text-sm font-medium text-text">CraftHub</p>
-                <p class="text-xs text-muted">Search engine for the Minecraft ecosystem.</p>
+    <div
+        class="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8
+        sm:flex-row sm:items-center sm:justify-between sm:px-6"
+    >
+
+        <div class="flex items-center gap-3">
+
+            <div
+                class="flex w-20 items-center justify-center"
+            >
+                <img
+                    src="{{ asset('crafthub-text-horizontal.svg') }}"
+                    alt="CraftHub"
+                />
             </div>
         </div>
-        <p class="text-sm text-muted">
-            Made with &#10084; by
+
+        <div class="flex items-center gap-4">
+
             <a
                 href="https://github.com/timeobvrt"
-                class="text-text hover:underline"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-xs text-muted transition hover:text-crafthub font-pixel"
             >
                 @timeobvrt
             </a>
-        </p>
+
+            <span class="h-3 w-px bg-white/10"></span>
+
+            <span class="text-xs text-muted/50">
+                Made with <span class="text-crafthub"><i class="fa-pixel fa-regular fa-heart fa-float"></i></span>
+            </span>
+
+        </div>
+
     </div>
+
 </footer>

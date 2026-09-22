@@ -1,44 +1,29 @@
 <x-layouts.app title="CraftHub">
     <main>
         <section class="relative overflow-hidden">
-            <div class="pointer-events-none absolute inset-0 -z-10">
-                <div
-                    class="absolute left-1/2 -top-55 h-150 w-255 -translate-x-1/2 rounded-full bg-crafthub/10 blur-[130px]"
-                ></div>
-            </div>
-
-            <div class="mx-auto max-w-7xl px-6 py-28 sm:py-36 lg:py-44">
+            <div class="relative mx-auto max-w-7xl px-6 py-28 sm:py-36 lg:py-44">
                 <div class="mx-auto max-w-4xl text-center">
-                    <h1
-                        class="text-balance text-5xl font-bold tracking-[-0.04em] sm:text-6xl lg:text-7xl"
-                    >
+                    <div class="mb-10 inline-flex items-center">
+                        <img
+                            src="{{ asset('crafthub.svg') }}"
+                            alt="CraftHub"
+                            class="h-20 w-20"
+                        />
+                    </div>
+
+                    <h1 class="text-balance text-5xl font-bold tracking-tighter sm:text-6xl lg:text-7xl">
                         All
-                        <span class="text-crafthub"> Minecraft </span>
+                        <span class="text-crafthub font-pixel"> Minecraft </span>
                         projects combined.
                     </h1>
 
-                    <p class="mt-6 text-balance text-lg leading-6 text-muted">Search mods, plugins and modpacks from multiple platforms without jumping between websites.</p>
                     <form
                         action="{{ route('search') }}"
                         method="GET"
                         class="mx-auto mt-10 max-w-3xl"
                     >
-                        <div
-                            class="group flex items-center rounded-2xl border border-white/10 bg-surface p-2 shadow-2xl shadow-black/20 transition focus-within:border-crafthub/50 focus-within:ring-1 focus-within:ring-crafthub/50"
-                        >
-                            <div class="flex flex-1 items-center">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    class="ml-3 h-5 w-5 shrink-0 text-muted"
-                                >
-                                    <circle cx="11" cy="11" r="8"></circle>
-                                    <path d="m21 21-4.3-4.3"></path>
-                                </svg>
-
+                        <div class="pixel-border-green flex items-center bg-surface p-2">
+                            <div class="flex min-w-0 flex-1 items-center">
                                 <input
                                     type="text"
                                     name="q"
@@ -48,16 +33,16 @@
                                 />
                             </div>
 
-                            <button
-                                type="submit"
-                                class="rounded-xl bg-crafthub px-6 py-3 text-sm font-semibold text-background transition hover:bg-crafthub-light"
-                            >
+                            <x-button type="submit">
+                                <i class="fa-pixel fa-regular fa-magnifying-glass"></i>
                                 Search
-                            </button>
+                            </x-button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </section>
+
     </main>
 </x-layouts.app>
